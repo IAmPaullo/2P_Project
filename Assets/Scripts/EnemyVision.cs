@@ -18,8 +18,7 @@ public class EnemyVision : MonoBehaviour
     int randValue;
     bool canRoll = true;
     bool isSpawnable = true;
-
-    [SerializeField]
+    bool canShoot = true;
     enum EnemyStanceEnum { Idle, Reset, ShootWall, ShootStraight };
 
     [SerializeField]
@@ -33,7 +32,17 @@ public class EnemyVision : MonoBehaviour
 
     private void Update()
     {
-        Signal();
+        //Signal();
+        if (canRoll)
+        {
+            int roll = RollForChance();
+            StartCoroutine(ChanceCountDown());
+            canRoll = false;
+        }
+
+        EnemyState();
+
+        Debug.DrawRay(transform.position, this.gameObject.transform.up * 100, Color.red);
 
     }
 
@@ -43,18 +52,13 @@ public class EnemyVision : MonoBehaviour
         maxBounce = Mathf.Clamp(maxBounce, 1, maxBounce);
         ray = new Ray2D(this.transform.position, transform.up);
         hit = Physics2D.Raycast(ray.origin, ray.direction);
-        Debug.DrawRay(transform.position, this.gameObject.transform.up, Color.red);
+        Debug.DrawRay(transform.position, this.gameObject.transform.up, Color.blue);
 
-        if (canRoll)
-        {
-            int roll = RollForChance();
-            EnemyState(roll);
 
-            StartCoroutine(ChanceCountDown());
-            canRoll = false;
-        }
 
-        if (randValue != 0)
+
+
+        if (randValue == 4)
         {
 
 
@@ -63,8 +67,6 @@ public class EnemyVision : MonoBehaviour
                 refDir = Vector2.Reflect(ray.direction, hit.normal);
                 RaycastHit2D reflectedHit = Physics2D.Raycast(hit.point, refDir);
 
-
-                Debug.Log("parede");
 
                 Debug.DrawRay(hit.point, refDir * 100, Color.green);
 
@@ -77,7 +79,7 @@ public class EnemyVision : MonoBehaviour
                     else
                     {
 
-                        Debug.Log(hit.transform.name);
+                        //Debug.Log(hit.transform.name);
                     }
 
                 }
@@ -101,18 +103,15 @@ public class EnemyVision : MonoBehaviour
     {
         yield return new WaitForSeconds(cooldown);
         canRoll = true;
+        canShoot = true;
     }
 
     private int RollForChance()
     {
         if (canRoll)
-        {
-            randValue = Random.Range(0, states);
-            Debug.Log(randValue);
-        }
+            randValue = Random.Range(1, states);
 
         return randValue;
-
     }
 
 
@@ -130,15 +129,48 @@ public class EnemyVision : MonoBehaviour
         transform.rotation = originalTransform.rotation;
         ray = new Ray2D(this.transform.position, transform.up);
         hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        Debug.Log("resetei");
     }
 
-    private void EnemyState(int rolledState)
+
+    private void ShootWall()
     {
 
+    }
+
+    private void ShootStraight()
+    {
+        ray = new Ray2D(this.transform.position, transform.up);
+        hit = Physics2D.Raycast(ray.origin, ray.direction);
+        Debug.DrawRay(transform.position, this.gameObject.transform.up * 100, Color.blue);
+
+        if (hit && canShoot)
+        {
+            if (hit.collider.CompareTag("Ball"))
+            {
+                Debug.LogWarning("Atirou na bola");
+                canShoot = false;
+                StartCoroutine(ChanceCountDown());
+            }
+
+        }
+    }
+
+    private void EnemyState()
+    {
+        int rolledState = RollForChance();
 
         switch (rolledState)
         {
             case 0:
+                stance = EnemyStanceEnum.Reset;
+                ResetTransform();
+
+                break;
+
+
+            case 1:
                 //Idle
                 stance = EnemyStanceEnum.Idle;
                 ray = new Ray2D(this.transform.position, transform.up);
@@ -146,23 +178,22 @@ public class EnemyVision : MonoBehaviour
                 break;
 
 
-            case 1:
-                stance = EnemyStanceEnum.Reset;
-                ResetTransform();
 
-                break;
 
-               
 
             case 2:
                 stance = EnemyStanceEnum.ShootStraight;
+
+                ShootStraight();
+                cooldown = 500;
+
 
                 break;
 
 
             case 3:
                 stance = EnemyStanceEnum.ShootWall;
-
+                ShootWall();
                 break;
 
 

@@ -1033,7 +1033,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1178632712}
   m_Layer: 0
-  m_Name: Spawn (1)
+  m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1173,7 +1173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7115999916616014f9bef5d5471a58de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 180
+  speed: 228.93
   multiplier: 0
 --- !u!114 &1261604504
 MonoBehaviour:
@@ -1189,8 +1189,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxBounce: 2
   states: 4
-  cooldown: 2
-  rocketPrefab: {fileID: 0}
+  cooldown: 3
+  rocketPrefab: {fileID: 1368310711}
+  spawnPoint: {fileID: 1178632712}
   stance: 0
 --- !u!1 &1307177202
 GameObject:
@@ -1223,6 +1224,11 @@ Transform:
   m_Father: {fileID: 678216704}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+--- !u!1 &1368310711 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 731640238360436656, guid: 4f8f0e57e1ac81849976dd07b7c71934, type: 3}
+  m_PrefabInstance: {fileID: 172371713}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1623620789 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 731640238360436656, guid: 4f8f0e57e1ac81849976dd07b7c71934, type: 3}

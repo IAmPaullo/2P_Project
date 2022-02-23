@@ -8,6 +8,7 @@ public class EnemyVision : MonoBehaviour
     [SerializeField] int states = 3;
     [SerializeField] float cooldown;
     [SerializeField] GameObject rocketPrefab;
+    [SerializeField] Transform spawnPoint;
     Transform originalTransform;
     Ray2D ray;
     RaycastHit2D hit;
@@ -16,13 +17,14 @@ public class EnemyVision : MonoBehaviour
 
 
     int randValue;
-    bool canRoll = true;
-    bool isSpawnable = true;
+    public bool canRoll = true;
     bool canShoot = true;
     enum EnemyStanceEnum { Idle, Reset, ShootWall, ShootStraight };
 
     [SerializeField]
     EnemyStanceEnum stance;
+
+
 
 
     private void Awake()
@@ -32,13 +34,8 @@ public class EnemyVision : MonoBehaviour
 
     private void Update()
     {
-        //Signal();
-        if (canRoll)
-        {
-            int roll = RollForChance();
-            StartCoroutine(ChanceCountDown());
-            canRoll = false;
-        }
+
+        RollUpdate();
 
         EnemyState();
 
@@ -46,6 +43,25 @@ public class EnemyVision : MonoBehaviour
 
     }
 
+
+    private void RollUpdate()
+    {
+        if (canRoll)
+        {
+            int roll = RollForChance();
+            //StartCoroutine(ChanceCountDown());
+            canRoll = false;
+            //StartCoroutine(ChanceCountDown());
+            Debug.LogWarning("Rolando");
+        }
+    }
+    private int RollForChance()
+    {
+        if (canRoll)
+            randValue = Random.Range(1, states);
+
+        return randValue;
+    }
 
     void Signal()
     {
@@ -101,28 +117,32 @@ public class EnemyVision : MonoBehaviour
 
     private IEnumerator ChanceCountDown()
     {
-        yield return new WaitForSeconds(cooldown);
+        yield return new WaitForSeconds(cooldown + 0.3f);
         canRoll = true;
-        canShoot = true;
-    }
+        if (canShoot == false)
+            RocketReset();
 
-    private int RollForChance()
-    {
-        if (canRoll)
-            randValue = Random.Range(1, states);
 
-        return randValue;
     }
 
 
     private void SpawnMissile()
     {
-
-        rocketPrefab.SetActive(true);
         canRoll = false;
+        if (canShoot == false) return;
+        rocketPrefab.SetActive(true);
+        canShoot = false;
         StartCoroutine(ChanceCountDown());
     }
 
+    public void RocketReset()
+    {
+        rocketPrefab.transform.SetParent(spawnPoint);
+        rocketPrefab.transform.position = spawnPoint.position;
+        rocketPrefab.transform.rotation = spawnPoint.rotation;
+        rocketPrefab.SetActive(false);
+        canShoot = true;
+    }
     private void ResetTransform()
     {
         transform.position = originalTransform.position;
@@ -136,6 +156,24 @@ public class EnemyVision : MonoBehaviour
 
     private void ShootWall()
     {
+        ray = new Ray2D(this.transform.position, transform.up);
+        hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (hit && hit.collider.CompareTag("Wall"))
+        {
+            refDir = Vector2.Reflect(ray.direction, hit.normal);
+            RaycastHit2D reflectedHit = Physics2D.Raycast(hit.point, refDir);
+            Debug.DrawRay(hit.point, refDir * 100, Color.green);
+
+            if (reflectedHit)
+            {
+                if (reflectedHit.collider.CompareTag("Ball"))
+                {
+                    Debug.LogWarning("Collider verde na bola");
+                    SpawnMissile();
+                }
+            }
+        }
 
     }
 
@@ -149,11 +187,23 @@ public class EnemyVision : MonoBehaviour
         {
             if (hit.collider.CompareTag("Ball"))
             {
-                Debug.LogWarning("Atirou na bola");
-                canShoot = false;
-                StartCoroutine(ChanceCountDown());
+                SpawnMissile();
             }
 
+        }
+
+    }
+
+    private void RandomShot()
+    {
+        ray = new Ray2D(this.transform.position, transform.up);
+        hit = Physics2D.Raycast(ray.origin, ray.direction);
+        Debug.DrawRay(transform.position, this.gameObject.transform.up * 100, Color.blue);
+
+        if (hit && canShoot)
+        {
+            if (this.transform.rotation.z > -35 && this.transform.rotation.z < 40)
+                SpawnMissile();
         }
     }
 
@@ -173,21 +223,17 @@ public class EnemyVision : MonoBehaviour
             case 1:
                 //Idle
                 stance = EnemyStanceEnum.Idle;
-                ray = new Ray2D(this.transform.position, transform.up);
-                hit = Physics2D.Raycast(ray.origin, ray.direction);
+                //ray = new Ray2D(this.transform.position, transform.up);
+                //hit = Physics2D.Raycast(ray.origin, ray.direction);
+                //StartCoroutine(ChanceCountDown());
+                RandomShot();
+
                 break;
-
-
-
 
 
             case 2:
                 stance = EnemyStanceEnum.ShootStraight;
-
                 ShootStraight();
-                cooldown = 500;
-
-
                 break;
 
 
@@ -195,8 +241,6 @@ public class EnemyVision : MonoBehaviour
                 stance = EnemyStanceEnum.ShootWall;
                 ShootWall();
                 break;
-
-
 
         }
 

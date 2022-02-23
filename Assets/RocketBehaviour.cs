@@ -10,7 +10,6 @@ public class RocketBehaviour : MonoBehaviour
     [SerializeField] float speed;
     Transform spawnPoint;
     Vector2 lateSpeed;
-
     
 
     private void OnEnable()
@@ -21,9 +20,6 @@ public class RocketBehaviour : MonoBehaviour
         rb.velocity = rocketDir * speed;
     }
 
-
-
-
     private void Update()
     {
         lateSpeed = rb.velocity;
@@ -33,14 +29,11 @@ public class RocketBehaviour : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
-
             Debug.Log(lateSpeed.normalized);
             Vector2 _wallNormal = collision.contacts[0].normal;
             rocketDir = Vector2.Reflect(lateSpeed, _wallNormal).normalized;
             rb.velocity = rocketDir * speed;
-
-            Debug.Log(lateSpeed.normalized);
-
+            //Debug.Log(lateSpeed.normalized);
         }
     }
 

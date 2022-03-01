@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class RocketBehaviour : MonoBehaviour
 {
-
     Vector2 rocketDir;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] float speed;
     Transform spawnPoint;
     Vector2 lateSpeed;
-    
 
     private void OnEnable()
     {
@@ -33,7 +31,11 @@ public class RocketBehaviour : MonoBehaviour
             Vector2 _wallNormal = collision.contacts[0].normal;
             rocketDir = Vector2.Reflect(lateSpeed, _wallNormal).normalized;
             rb.velocity = rocketDir * speed;
-            //Debug.Log(lateSpeed.normalized);
+
+        }
+        else if (collision.gameObject.CompareTag("Ball"))
+        {
+            this.gameObject.SetActive(false);
         }
     }
 

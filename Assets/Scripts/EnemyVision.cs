@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
 {
-    [SerializeField] int maxBounce = 1;
+    
     [SerializeField] int states = 3;
     [SerializeField] float cooldown;
     [SerializeField] GameObject rocketPrefab;
@@ -17,12 +17,14 @@ public class EnemyVision : MonoBehaviour
 
 
     int randValue;
-    public bool canRoll = true;
+    bool canRoll = true;
     bool canShoot = true;
     enum EnemyStanceEnum { Idle, Reset, ShootWall, ShootStraight };
 
     [SerializeField]
+#pragma warning disable IDE0052 // Remove unread private members
     EnemyStanceEnum stance;
+#pragma warning restore IDE0052 // Remove unread private members
 
 
 
@@ -63,56 +65,7 @@ public class EnemyVision : MonoBehaviour
         return randValue;
     }
 
-    void Signal()
-    {
-        maxBounce = Mathf.Clamp(maxBounce, 1, maxBounce);
-        ray = new Ray2D(this.transform.position, transform.up);
-        hit = Physics2D.Raycast(ray.origin, ray.direction);
-        Debug.DrawRay(transform.position, this.gameObject.transform.up, Color.blue);
-
-
-
-
-
-        if (randValue == 4)
-        {
-
-
-            if (hit && hit.collider.CompareTag("Wall"))
-            {
-                refDir = Vector2.Reflect(ray.direction, hit.normal);
-                RaycastHit2D reflectedHit = Physics2D.Raycast(hit.point, refDir);
-
-
-                Debug.DrawRay(hit.point, refDir * 100, Color.green);
-
-                if (reflectedHit)
-                {
-                    if (reflectedHit.collider.CompareTag("Ball"))
-                    {
-                        Debug.Log("Collider verde na bola");
-                    }
-                    else
-                    {
-
-                        //Debug.Log(hit.transform.name);
-                    }
-
-                }
-            }
-
-            else
-            {
-                if (hit)
-                {
-                    refDir = Vector2.Reflect(refDir, hit.normal);
-                    ray = new Ray2D(hit.point, refDir);
-                    Debug.DrawRay(hit.point, refDir * 100, Color.yellow);
-                }
-            }
-        }
-
-    }
+    
 
 
     private IEnumerator ChanceCountDown()

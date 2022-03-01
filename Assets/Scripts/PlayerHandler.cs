@@ -9,7 +9,6 @@ public class PlayerHandler : MonoBehaviour
     private bool isSpawnable = true;
     [SerializeField]private float cooldown;
     [SerializeField] Transform spawnPoint;
-   
 
     private void Update()
     {

@@ -41,7 +41,8 @@ public class GameHandler : MonoBehaviour
     private void ShakeCam()
     {
         mainCam.transform.DOShakePosition(shakeDuration, shakeStrength, 10, 90);
-        //canvas.transform.DOShakePosition(shakeDuration, shakeStrength, 10, 90);
     }
+
+
 
 }

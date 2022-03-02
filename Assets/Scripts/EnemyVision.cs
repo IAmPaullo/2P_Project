@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
 {
-    
+
     [SerializeField] int states = 3;
     [SerializeField] float cooldown;
     [SerializeField] GameObject rocketPrefab;
@@ -20,11 +20,8 @@ public class EnemyVision : MonoBehaviour
     bool canRoll = true;
     bool canShoot = true;
     enum EnemyStanceEnum { Idle, Reset, ShootWall, ShootStraight };
+    [SerializeField] EnemyStanceEnum stance;
 
-    [SerializeField]
-#pragma warning disable IDE0052 // Remove unread private members
-    EnemyStanceEnum stance;
-#pragma warning restore IDE0052 // Remove unread private members
 
 
 
@@ -65,7 +62,7 @@ public class EnemyVision : MonoBehaviour
         return randValue;
     }
 
-    
+
 
 
     private IEnumerator ChanceCountDown()

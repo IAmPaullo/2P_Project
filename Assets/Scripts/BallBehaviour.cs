@@ -7,20 +7,27 @@ public class BallBehaviour : MonoBehaviour
 {
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Transform originalSpawn;
+    [SerializeField] ParticleSystem particleSys;
     [SerializeField] float slowdownSpeed;
     [SerializeField] float resetCooldown;
     [SerializeField] float scaleSpeed;
     bool isHit;
-    public Ease animEase;
+    [SerializeField] Ease animEase;
     private void Update()
     {
         SlowDownByTime();
-
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
+
         if (collision.gameObject.CompareTag("Rocket"))
+        {
             isHit = true;
+            particleSys.Play();
+        }
+
+
     }
 
     private void SlowDownByTime()
@@ -42,7 +49,7 @@ public class BallBehaviour : MonoBehaviour
         rb.velocity *= 0;
         rb.angularVelocity *= 0;
         BallAnim();
-        //StartCoroutine(ResetPositionAndTimeScale());
+
     }
 
     IEnumerator ResetPositionAndTimeScale()

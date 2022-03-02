@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerHandler : MonoBehaviour
 {
 
-    [SerializeField]GameObject rocketPrefab;
-    private bool isSpawnable = true;
-    [SerializeField]private float cooldown;
+    [SerializeField] GameObject rocketPrefab;
+    [HideInInspector] public bool isSpawnable = true;
+    [SerializeField] private float cooldown;
     [SerializeField] Transform spawnPoint;
 
     private void Update()
@@ -29,7 +29,6 @@ public class PlayerHandler : MonoBehaviour
     private IEnumerator RocketCooldown()
     {
         yield return new WaitForSeconds(cooldown);
-
         StartCooldown();
     }
 
@@ -39,6 +38,17 @@ public class PlayerHandler : MonoBehaviour
         rocketPrefab.transform.position = spawnPoint.position;
         rocketPrefab.transform.rotation = spawnPoint.rotation;
         rocketPrefab.SetActive(false);
+        isSpawnable = true;
+    }
+
+    public void BlockShoot()
+    {
+        isSpawnable = false;
+    }
+
+    public void ResumeShoot()
+    {
+        
         isSpawnable = true;
     }
 
